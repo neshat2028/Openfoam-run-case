@@ -1,3 +1,12 @@
+FoamFile
+{
+    version     2.0;
+    format      ascii;
+    class       dictionary;
+    location    "constant";
+    object      testMotionDict;
+}
+
 // User-editable parameters for the programmed velocity field
 
 rotation
@@ -18,4 +27,3 @@ translation3
     U       (0.4472135955 0.894427191 0); // m/s, |U|=1
     duration 0.55901699437;               // s
 }
-
