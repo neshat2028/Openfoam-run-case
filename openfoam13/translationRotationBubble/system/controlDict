@@ -15,6 +15,10 @@ FoamFile
 }
 application     scalarTransportFoam;
 
+// Only load the libraries we need (suppresses harmless attempts to open
+// libscalarTransportFoam.so on some installations)
+libs ("libutilityFunctionObjects.so");
+
 startFrom       startTime;
 startTime       0;
 
