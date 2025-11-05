@@ -1,0 +1,28 @@
+/*--------------------------------*- C++ -*----------------------------------*\
+| =========                 |                                                 |
+| \      /  F ield         | OpenFOAM: The Open Source CFD Toolbox           |
+|  \    /   O peration     | Version:  v13                                   |
+|   \  /    A nd           | Web:      www.OpenFOAM.org                      |
+|    \/     M anipulation  |                                                 |
+\*---------------------------------------------------------------------------*/
+solvers
+{
+    T
+    {
+        solver          PBiCGStab;
+        preconditioner  DILU;
+        tolerance       1e-10;
+        relTol          0;
+    }
+}
+
+SIMPLE {}
+PISO  {}
+PIMPLE{}
+
+relaxationFactors
+{
+}
+
+// ************************************************************************* //
+

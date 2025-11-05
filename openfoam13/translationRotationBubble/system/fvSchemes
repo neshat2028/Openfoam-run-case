@@ -1,0 +1,45 @@
+/*--------------------------------*- C++ -*----------------------------------*\
+| =========                 |                                                 |
+| \      /  F ield         | OpenFOAM: The Open Source CFD Toolbox           |
+|  \    /   O peration     | Version:  v13                                   |
+|   \  /    A nd           | Web:      www.OpenFOAM.org                      |
+|    \/     M anipulation  |                                                 |
+\*---------------------------------------------------------------------------*/
+ddtSchemes
+{
+    default         Euler;
+}
+
+gradSchemes
+{
+    default         Gauss linear;
+}
+
+divSchemes
+{
+    div(phi,T)      Gauss upwind;        // stable, bounded advection
+}
+
+laplacianSchemes
+{
+    default         Gauss linear corrected;
+}
+
+interpolationSchemes
+{
+    default         linear;
+}
+
+snGradSchemes
+{
+    default         corrected;
+}
+
+fluxRequired
+{
+    default         no;
+    T               yes;
+}
+
+// ************************************************************************* //
+

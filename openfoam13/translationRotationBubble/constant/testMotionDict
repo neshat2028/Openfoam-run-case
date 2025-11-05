@@ -1,0 +1,21 @@
+// User-editable parameters for the programmed velocity field
+
+rotation
+{
+    center  (0.75 0.75 0);     // rotation centre (edit as needed)
+    omega   2;                  // rad/s
+    duration 1.57079632679;     // s
+}
+
+translation2
+{
+    U       (-1 0 0);          // m/s
+    duration 0.25;             // s
+}
+
+translation3
+{
+    U       (0.4472135955 0.894427191 0); // m/s, |U|=1
+    duration 0.55901699437;               // s
+}
+

@@ -1,0 +1,122 @@
+/*--------------------------------*- C++ -*----------------------------------*\
+| =========                 |                                                 |
+| \      /  F ield         | OpenFOAM: The Open Source CFD Toolbox           |
+|  \    /   O peration     | Version:  v13                                   |
+|   \  /    A nd           | Web:      www.OpenFOAM.org                      |
+|    \/     M anipulation  |                                                 |
+\*---------------------------------------------------------------------------*/
+application     scalarTransportFoam;
+
+startFrom       startTime;
+startTime       0;
+
+stopAt          endTime;
+// total = 1.57079632679 + 0.25 + 0.55901699437
+endTime         2.37981332116;
+
+deltaT          0.005;
+
+writeControl    timeStep;
+writeInterval   20;
+
+purgeWrite      0;
+
+adjustTimeStep  no;
+
+maxCo           0.9;
+
+functions
+{
+    updateU
+    {
+        type            coded;
+        functionObjectLibs ("libutilityFunctionObjects.so");
+        enabled         true;
+        // Run at every time step before equations are solved
+        executeControl  timeStep;
+        writeControl    timeStep;
+
+        codeOptions
+        #{
+            -std=c++14
+        #};
+
+        codeExecute
+        #{
+            const fvMesh& mesh = refCast<const fvMesh>(obr_);
+            Time& runTime = const_cast<Time&>(mesh.time());
+            const scalar t = runTime.value();
+
+            IOdictionary motionDict
+            (
+                IOobject
+                (
+                    "testMotionDict",
+                    runTime.constant(),
+                    mesh,
+                    IOobject::MUST_READ,
+                    IOobject::NO_WRITE
+                )
+            );
+
+            dictionary rot = motionDict.subDict("rotation");
+            dictionary tr2 = motionDict.subDict("translation2");
+            dictionary tr3 = motionDict.subDict("translation3");
+
+            const scalar t1 = rot.lookupOrDefault<scalar>("duration", 0.0);
+            const scalar t2 = tr2.lookupOrDefault<scalar>("duration", 0.0);
+            const scalar t3 = tr3.lookupOrDefault<scalar>("duration", 0.0);
+
+            const scalar total1 = t1;
+            const scalar total2 = t1 + t2;
+            const scalar total3 = t1 + t2 + t3;
+
+            // Adjust deltaT so phase transitions occur exactly at t1, t2, t3
+            scalar dt = runTime.deltaTValue();
+            scalar rem = 0.0;
+            if (t < total1 && t + dt > total1) { rem = total1 - t; }
+            else if (t < total2 && t + dt > total2) { rem = total2 - t; }
+            else if (t < total3 && t + dt > total3) { rem = total3 - t; }
+            if (rem > SMALL)
+            {
+                Info<< "Adjusting deltaT to hit phase boundary: " << rem << endl;
+                runTime.setDeltaT(rem);
+            }
+
+            volVectorField& U = const_cast<volVectorField&>
+            (
+                mesh.lookupObject<volVectorField>("U")
+            );
+
+            const vectorField& cc = mesh.C();
+
+            if (t <= total1 + SMALL)
+            {
+                const vector centre = rot.lookup("center");
+                const scalar omega = rot.lookupOrDefault<scalar>("omega", 0.0);
+                forAll(U, i)
+                {
+                    const vector r = cc[i] - centre;
+                    const scalar ux = -omega * r.y();
+                    const scalar uy =  omega * r.x();
+                    U[i] = vector(ux, uy, 0.0);
+                }
+            }
+            else if (t <= total2 + SMALL)
+            {
+                const vector U2 = tr2.lookup("U");
+                U.internalField() = U2;
+            }
+            else
+            {
+                const vector U3 = tr3.lookup("U");
+                U.internalField() = U3;
+            }
+
+            U.correctBoundaryConditions();
+        #};
+    }
+}
+
+// ************************************************************************* //
+

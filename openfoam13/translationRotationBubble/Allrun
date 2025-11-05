@@ -1,0 +1,21 @@
+#!/bin/bash
+set -e
+cd "${0%/*}" || exit 1
+
+if [ -f "$WM_PROJECT_DIR/bin/tools/RunFunctions" ]; then
+  . "$WM_PROJECT_DIR/bin/tools/RunFunctions"
+else
+  runApplication() { "$@"; }
+fi
+
+echo "Building mesh..."
+runApplication blockMesh > log.blockMesh 2>&1
+
+echo "Patching initial scalar field (bubble)..."
+runApplication setFields > log.setFields 2>&1
+
+echo "Running scalarTransportFoam with programmed U..."
+runApplication scalarTransportFoam > log.run 2>&1
+
+echo "Done. See log.* files for details."
+

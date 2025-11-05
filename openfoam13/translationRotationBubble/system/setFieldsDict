@@ -1,0 +1,31 @@
+/*--------------------------------*- C++ -*----------------------------------*\
+| =========                 |                                                 |
+| \      /  F ield         | OpenFOAM: The Open Source CFD Toolbox           |
+|  \    /   O peration     | Version:  v13                                   |
+|   \  /    A nd           | Web:      www.OpenFOAM.org                      |
+|    \/     M anipulation  |                                                 |
+\*---------------------------------------------------------------------------*/
+defaultFieldValues
+(
+    volScalarFieldValue T 0
+);
+
+regions
+(
+    // Bubble as a thin cylinder (2D)
+    cylinderToCell
+    {
+        // Center and radius set to match your 2D-vortex benchmark.
+        // Update these two values as needed.
+        p1 (0.75 0.75 0);
+        p2 (0.75 0.75 1);
+        radius 0.15;
+        fieldValues
+        (
+            volScalarFieldValue T 1
+        );
+    }
+);
+
+// ************************************************************************* //
+
